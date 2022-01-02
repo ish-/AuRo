@@ -2,15 +2,20 @@ let inited = false;
 let curDeviceTargets;
 const frameId = Date.now();
 function init (deviceId) {
-  if (!inited) {
-    inited = true;
-    inject(AuRoPatchContent);
-  }
-  inject(AuRoSetOutputDevice(deviceId))
-  chrome.runtime.sendMessage({
-    name: 'updatePopupIconText',
-    deviceId: deviceId,
-  });
+	if (!inited) {
+		inited = true;
+		// inject(AuRoPatchContent);
+		return chrome.runtime.sendMessage({
+			name: 'content:inject',
+			frameId,
+		});
+	}
+
+	updateDeviceId(deviceId);
+	chrome.runtime.sendMessage({
+		name: 'updatePopupIconText',
+		deviceId,
+	});
 }
 
 chrome.runtime.sendMessage({
@@ -43,21 +48,32 @@ function listenStorage ({ tabId, host }) {
   });
 }
 
+function updateDeviceId (deviceId) {
+	window.postMessage({
+		name: 'auro.update',
+		deviceId,
+	});
+}
+
 chrome.runtime.onMessage.addListener(
-  (msg, sender, send) => {
-    log('onMessage', { msg, sender });
-    
-    switch (msg.name) {
-      case 'content:init:resp':
-        if (msg.frameId !== frameId)
-          return;
+	(msg, sender, send) => {
+		log('onMessage', { msg, sender });
+		
+		switch (msg.name) {
+			case 'content:inject:resp':
+				updateDeviceId(currentDeviceId)
+				break;
+			case 'content:init:resp':
+				if (msg.frameId !== frameId)
+					return;
         console.log('content:init:resp', msg);
         curDeviceTargets = msg.targets;
         if (msg.targets.deviceId && msg.targets.deviceId !== 'default') {
-          init(msg.targets.deviceId);
-        }
-        listenStorage(msg);
-        break;
+					inited = true;
+					init(msg.deviceId);
+				}
+				listenStorage(msg.tabId);
+				break;
 
       case 'popup:getState':
         navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
@@ -158,7 +174,7 @@ function AuRoPatchContent () {
     getDeviceId().then(deviceId => {
       this.setSinkId($AuRo.deviceId).then(arg => {
         l('Audio.play().getDeviceId().setSinkId()', { deviceId });
-        _audioPlay.call(this); 
+        _audioPlay.call(this);
       });
     }).catch(err => {
       _audioPlay.call(this);
@@ -173,7 +189,7 @@ function AuRoPatchContent () {
     getDeviceId().then(deviceId => {
       this.setSinkId($AuRo.deviceId).then(arg => {
         l('Video.play().getDeviceId().setSinkId()', { deviceId });
-        _videoPlay.call(this); 
+        _videoPlay.call(this);
       });
     }).catch(err => {
       _videoPlay.call(this);
@@ -188,7 +204,7 @@ function AuRoPatchContent () {
     getDeviceId().then(deviceId => {
       this.setSinkId($AuRo.deviceId).then(arg => {
         l('Video.play().getDeviceId().setSinkId()', { deviceId });
-        _aPlay.call(this); 
+        _aPlay.call(this);
       });
     }).catch(err => {
       _aPlay.call(this);
@@ -208,10 +224,7 @@ function AuRoPatchContent () {
 }
 
 function inject(fn) {
-  const script = document.createElement('script')
-  script.text = `(${ typeof fn === 'function' ? fn.toString() : fn })();`
-  document.documentElement.appendChild(script);
-  document.documentElement.removeChild(script);
+
 }
 
 function l (...args) {
