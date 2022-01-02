@@ -105,12 +105,25 @@ function AuRoPatchContent () {
 		deviceId: null,
 		update (deviceId) {
 			$AuRo.deviceId = deviceId;
-			l('update', { deviceId });
-			if (this.els[0]) {
-				this.els[0].pause();
-				this.els[0].setSinkId(deviceId);
-				setTimeout(() => this.els[0].play(), 3);
-			}
+			l('update()', { deviceId });
+
+			Promise.all(this.els.map(el => {
+				return new Promise(rslv => {
+					const prevTime = el.currentTime;
+					setTimeout(() => {
+						rslv(prevTime !== el.currentTime ? el : null);
+					}, 5);
+				})
+			})).then(elsWhichTimesAreChanging => {
+				const playingEls = elsWhichTimesAreChanging.filter(Boolean);
+				playingEls.forEach(el => {
+					el.pause();
+					el.setSinkId(deviceId);
+					setTimeout(() => el.play(), 3);
+				})
+
+				l('update().setSindId() for: ', playingEls);
+			});
 		}
 	};
 
