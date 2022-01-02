@@ -10,4 +10,5 @@ To not overhead every page with script injection it require to pause/play media 
 need to be manipulated which - as a result - creates entries under `contentSettings['microphone']`, i. e.
 it allows those sites to access your microphone.
 
- 
+## Links
+[GitHub](https://github.com/ish-/AuRo)

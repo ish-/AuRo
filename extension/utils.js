@@ -31,6 +31,10 @@ export function log (desc, ...args) {
 }
 
 export const Storage = {
+  getAll () {
+    return this.getSome(null);
+  },
+
   get (key) {
     return new Promise (rslv => chrome.storage.local.get(key, res => rslv(res[key] || null)));
   },
@@ -40,7 +44,11 @@ export const Storage = {
   },
 
   set (payload) {
-     return new Promise(rslv => chrome.storage.local.set(payload, rslv));
+    return new Promise(rslv => chrome.storage.local.set(payload, rslv));
+  },
+
+  remove (keys) {
+    return new Promise(rslv => chrome.storage.local.remove(keys, rslv));
   },
 
   _listening: false,

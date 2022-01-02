@@ -50,7 +50,7 @@ function drawDeviceList (devices, currentDeviceId) {
 					value: device.deviceId,
 				}),
 				createEl('label', {
-					for: labelId,
+					htmlFor: labelId,
 					textContent: device.label
 				}),
 			]);

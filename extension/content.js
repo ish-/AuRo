@@ -19,6 +19,10 @@ chrome.runtime.sendMessage({
 	frameId,
 });
 
+var frameDepth = (function getDepth(w) {
+	return w.parent === w ? 0 : 1 + getDepth(w.parent);
+})(window);
+
 function filterOutputDevices (devices) {
   return devices.filter(({ kind }) => kind === 'audiooutput')
 }
@@ -79,12 +83,14 @@ function AuRoSetOutputDevice (deviceId) {
 	return `() => { $AuRo.update('${ deviceId }') }`;
 }
 
-const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (frameDepth === 0) {
+	const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-chrome.runtime.sendMessage({
-	name: 'updatePopupIconTheme',
-	isDark,
-});
+	chrome.runtime.sendMessage({
+		name: 'updatePopupIconTheme',
+		isDark,
+	});
+}
 
 function AuRoPatchContent () {
 	window.$AuRo = {

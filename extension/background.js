@@ -3,9 +3,13 @@ import {
 	log,
 } from './utils.js';
 
-var extensionId = chrome.runtime.id;
-
-chrome.contentSettings['microphone'].set({'primaryPattern':'*://' + extensionId + '/*','setting':'allow'});
+// drop all tabs settings after last browser boot
+(async function dropStorageTabsKeys () {
+	const items = await Storage.getAll();
+  const tabKeys = Object.keys(items)
+  	.filter(key => key.startsWith('tab_'));
+	log('storage tab keys droped', await Storage.remove(tabKeys));
+})()
 
 chrome.runtime.onMessage.addListener((msg, sender) => {
   const fn = msgs[msg.name];
@@ -15,25 +19,25 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
 
 const msgs = {
 	async ['content:init'] ({ frameId }, sender) {
-		log('content:init', { frameId }, sender);
 		const { tab } = sender;
-		const url = new URL(tab.url);
-		const allKey = 'all';
+		// 'all' and 'host' options is not implemented yet
+		// const url = new URL(tab.url);
 		const tabKey = `tab_${ tab.id }`;
-		const hostKey = `host_${ url.host }`;
-		// all and host is not implemented yet
-		const res = await Storage.getSome([ allKey, tabKey, hostKey ]);
-		const hostDeviceId = res[hostKey];
+		// const allKey = 'all';
+		// const hostKey = `host_${ url.host }`;
+		const res = await Storage.getSome([ tabKey/*, allKey, hostKey*/ ]);
 		const tabDeviceId = res[tabKey];
-		const allDeviceId = res[allKey];
+		// const hostDeviceId = res[hostKey];
+		// const allDeviceId = res[allKey];
 
-		const deviceId = allDeviceId || hostDeviceId || tabDeviceId || null;
-		const target = allDeviceId ? 'all' : hostDeviceId ? 'host' : tabDeviceId ? 'tab' : null;
+		const deviceId = /*allDeviceId || hostDeviceId || */tabDeviceId || null;
+		// const target = allDeviceId ? 'all' : hostDeviceId ? 'host' : tabDeviceId ? 'tab' : null;
+		log('content:init', { frameId }, sender, '->', deviceId);
 
     chrome.tabs.sendMessage(tab.id, {
     	name: 'content:init:resp',
     	deviceId,
-    	target,
+    	// target,
     	tabId: tab.id,
     	frameId,
     });
