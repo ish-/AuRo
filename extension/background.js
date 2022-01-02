@@ -42,7 +42,20 @@ const msgs = {
     	frameId,
     });
 
+    if (deviceId)
+    	injectTab({ tabId: tab.id });
+
     updatePopupIconText({ tabId: tab.id, deviceId });
+	},
+
+	async ['content:inject'] ({ frameId }, sender) {
+		const tabId = sender.tab.id;
+		await injectTab({ tabId });
+		chrome.tabs.sendMessage(tabId, {
+    	name: 'content:inject:resp',
+    	tabId,
+    	frameId,
+    });
 	},
 
 	['updatePopupIconText'] ({ deviceId }, sender) {
@@ -53,14 +66,23 @@ const msgs = {
 	},
 
 	['updatePopupIconTheme'] ({ isDark }) {
-		chrome.browserAction.setIcon({
+		chrome.action.setIcon({
 	  	path: isDark ? 'Icon128-white.png' : 'Icon128.png',
 	  });
-	}
+	},
 };
 
+function injectTab ({ tabId }) {
+	return new Promise(rslv => {
+		chrome.scripting.executeScript({
+	    target: { tabId/*, allFrames: true*/ },
+	    files: ['content_injection.js'],
+	  }, rslv);
+	})
+}
+
 function updatePopupIconText ({ tabId, deviceId }) {
-	chrome.browserAction.setBadgeText({
+	chrome.action.setBadgeText({
 		tabId,
 		text: (!deviceId || deviceId === 'default') ? '' : 'Ω',
 	});

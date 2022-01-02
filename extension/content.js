@@ -5,9 +5,14 @@ function init (deviceId) {
 	currentDeviceId = deviceId;
 	if (!inited) {
 		inited = true;
-		inject(AuRoPatchContent);
+		// inject(AuRoPatchContent);
+		return chrome.runtime.sendMessage({
+			name: 'content:inject',
+			frameId,
+		});
 	}
-	inject(AuRoSetOutputDevice(deviceId))
+	
+	updateDeviceId(deviceId);
 	chrome.runtime.sendMessage({
 		name: 'updatePopupIconText',
 		deviceId,
@@ -44,15 +49,26 @@ function listenStorage (tabId) {
 	});
 }
 
+function updateDeviceId (deviceId) {
+	window.postMessage({
+		name: 'auro.update',
+		deviceId,
+	});
+}
+
 chrome.runtime.onMessage.addListener(
 	(msg, sender, send) => {
 		log('onMessage', { msg, sender });
 		
 		switch (msg.name) {
+			case 'content:inject:resp':
+				updateDeviceId(currentDeviceId)
+				break;
 			case 'content:init:resp':
 				if (msg.frameId !== frameId)
 					return;
 				if (msg.deviceId && msg.deviceId !== 'default') {
+					inited = true;
 					init(msg.deviceId);
 				}
 				listenStorage(msg.tabId);
@@ -198,10 +214,7 @@ function AuRoPatchContent () {
 }
 
 function inject(fn) {
-  const script = document.createElement('script')
-  script.text = `(${ typeof fn === 'function' ? fn.toString() : fn })();`
-  document.documentElement.appendChild(script);
-  document.documentElement.removeChild(script);
+  
 }
 
 function l (...args) {
