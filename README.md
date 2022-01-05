@@ -7,8 +7,6 @@ It also does not and will never work with AudioContext cause setSinkId() is not 
 To not overhead every page with script injection it require to pause/play media on initialization.
 
 **Note** that the API requires a successful call to `getUserMedia()` for every site with audio sinks that
-need to be manipulated which - as a result - creates entries under `contentSettings['microphone']`, i. e.
-it allows those sites to access your microphone.
-
+need to be manipulated.
 ## Links
 [GitHub](https://github.com/ish-/AuRo)
