@@ -9,4 +9,5 @@ To not overhead every page with script injection it require to pause/play media 
 **Note** that the API requires a successful call to `getUserMedia()` for every site with audio sinks that
 need to be manipulated.
 ## Links
+[Chrome Store](https://chrome.google.com/webstore/detail/auro-audio-output-device/hglnindfakmbhhkldompfjeknfapaceh)
 [GitHub](https://github.com/ish-/AuRo)
