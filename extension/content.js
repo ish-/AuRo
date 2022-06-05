@@ -1,8 +1,7 @@
 let inited = false;
-let currentDeviceId;
+let curDeviceTargets;
 const frameId = Date.now();
 function init (deviceId) {
-  currentDeviceId = deviceId;
   if (!inited) {
     inited = true;
     inject(AuRoPatchContent);
@@ -10,7 +9,7 @@ function init (deviceId) {
   inject(AuRoSetOutputDevice(deviceId))
   chrome.runtime.sendMessage({
     name: 'updatePopupIconText',
-    deviceId,
+    deviceId: deviceId,
   });
 }
 
@@ -34,10 +33,10 @@ function log (desc, ...args) {
   return args[0];
 }
 
-function listenStorage (tabId) {
+function listenStorage ({ tabId, host }) {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-      if (key === `tab_${ tabId }`) {
+      if (key === `tab_${ tabId }` || key === `host_${ tabId }`) {
         init(newValue);
       }
     }
@@ -52,20 +51,31 @@ chrome.runtime.onMessage.addListener(
       case 'content:init:resp':
         if (msg.frameId !== frameId)
           return;
-        if (msg.deviceId && msg.deviceId !== 'default') {
-          init(msg.deviceId);
+        console.log('content:init:resp', msg);
+        curDeviceTargets = msg.targets;
+        if (msg.targets.deviceId && msg.targets.deviceId !== 'default') {
+          init(msg.targets.deviceId);
         }
-        listenStorage(msg.tabId);
+        listenStorage(msg);
         break;
 
       case 'popup:getState':
         navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
-          return navigator.mediaDevices.enumerateDevices().then(devices => {
+          return navigator.mediaDevices.enumerateDevices().then(_devices => {
+            const devices = filterOutputDevices(_devices);
+
+            // filter not existent devices in targets
+            const targets = { ...curDeviceTargets };
+            Object.keys(curDeviceTargets).forEach(key => {
+              if (!devices.find(({ deviceId }) => deviceId === curDeviceTargets[key]))
+                targets[key] = null;
+            });
+
             chrome.runtime.sendMessage({
               id: msg.id,
               name: 'popup:getState:resp',
-              devices: filterOutputDevices(devices),
-              currentDeviceId,
+              devices,
+              targets,
               frameId,
             });
           });
@@ -122,7 +132,7 @@ function AuRoPatchContent () {
           setTimeout(() => el.play(), 3);
         })
 
-        l('update().setSindId() for: ', playingEls);
+        l(`update().setSinkId(${ deviceId }) for: `, playingEls);
       });
     }
   };

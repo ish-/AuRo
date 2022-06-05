@@ -8,8 +8,15 @@ import {
   const items = await Storage.getAll();
   const tabKeys = Object.keys(items)
     .filter(key => key.startsWith('tab_'));
-  log('storage tab keys droped', await Storage.remove(tabKeys));
+  log('storage tabs keys was dropped', await Storage.remove(tabKeys));
 })()
+
+async function dropStorageHostsKeys () {
+  const items = await Storage.getAll();
+  const tabKeys = Object.keys(items)
+    .filter(key => key.startsWith('host_'));
+  log('storage hosts keys was dropped', await Storage.remove(tabKeys));
+}
 
 chrome.runtime.onMessage.addListener((msg, sender) => {
   const fn = msgs[msg.name];
@@ -21,23 +28,28 @@ const msgs = {
   async ['content:init'] ({ frameId }, sender) {
     const { tab } = sender;
     // 'all' and 'host' options is not implemented yet
-    // const url = new URL(tab.url);
+    const { host } = new URL(tab.url);
     const tabKey = `tab_${ tab.id }`;
     // const allKey = 'all';
-    // const hostKey = `host_${ url.host }`;
-    const res = await Storage.getSome([ tabKey/*, allKey, hostKey*/ ]);
-    const tabDeviceId = res[tabKey];
-    // const hostDeviceId = res[hostKey];
+    const hostKey = `host_${ host }`;
+    const res = await Storage.getSome([ tabKey/*, allKey*/, hostKey ]);
+    const tabDeviceId = res[tabKey] || null;
+    const hostDeviceId = res[hostKey] || null;
     // const allDeviceId = res[allKey];
 
-    const deviceId = /*allDeviceId || hostDeviceId || */tabDeviceId || null;
+    const deviceId = /*allDeviceId || */tabDeviceId || hostDeviceId || null;
     // const target = allDeviceId ? 'all' : hostDeviceId ? 'host' : tabDeviceId ? 'tab' : null;
     log('content:init', { frameId }, sender, '->', deviceId);
 
     chrome.tabs.sendMessage(tab.id, {
       name: 'content:init:resp',
-      deviceId,
+      targets: {
+        deviceId,
+        hostDeviceId,
+        tabDeviceId,
+      },
       // target,
+      host,
       tabId: tab.id,
       frameId,
     });
@@ -65,3 +77,7 @@ function updatePopupIconText ({ tabId, deviceId }) {
     text: (!deviceId || deviceId === 'default') ? '' : 'Ω',
   });
 }
+
+window.AuRo = {
+  dropStorageHostsKeys,
+};

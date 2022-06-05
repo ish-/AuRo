@@ -5,14 +5,14 @@
   "description": "",
   "author": "",
   "homepage_url": "https://github.com/ish-/AuRo",
-  "version": "0.1",
-  "version_name": "0.1",
+  "version": "0.3",
+  "version_name": "0.3",
   "minimum_chrome_version": "63.0",
   "browser_action": {
     "default_icon": {
       "128": "Icon128.png"
     },
-    "default_title": "AuRo - audio output device router (popup)",
+    "default_title": "AuRo - choose your audio output device",
     "default_popup": "popup.html"
   },  
   "icons": {
