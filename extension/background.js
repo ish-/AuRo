@@ -70,6 +70,16 @@ const msgs = {
     });
 	},
 
+	async ['content:inject'] ({ frameId }, sender) {
+		const tabId = sender.tab.id;
+		await injectTab({ tabId });
+		chrome.tabs.sendMessage(tabId, {
+    	name: 'content:inject:resp',
+    	tabId,
+    	frameId,
+    });
+	},
+
 	['updatePopupIconText'] ({ deviceId }, sender) {
 		updatePopupIconText({
 			deviceId,
