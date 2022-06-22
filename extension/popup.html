@@ -1,122 +1,158 @@
 <!DOCTYPE html>
 <html>
-  <head><title>AuRo - audio output device router</title></head>
-  <style>
-    * {
-      padding: 0;
-      margin: 0;
-    }
-    body {
-      padding: 16px;
-      width: 400px;
-      background: transparent;
-      font-size: 12px;
-    }
-    .bg {
-      position: absolute;
-      pointer-events: none;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-repeat: no-repeat no-repeat;
-      opacity: .1;
-      background-image: url('Icon128.png');
-      background-size: contain;
-      background-position: right;
-      filter: blur(6px);
-      z-index: -1;
-    }
-    h3 {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 8px;
-    }
-    ul {
-      margin: 0;
-    }
-    li {
-      padding:0.125em;
-      list-style: none;
-      display: flex;
-      justify-content: start;
-      align-items: center;
-      white-space: nowrap;
-      height: 24px;
-    }
-    li.--default label { font-weight: bold }
-    label {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-    input[type="radio"] {
-      margin-right: 16px;
-    }
-    #devices { margin-bottom: 8px }
-    .tip {
-      padding: 4px 8px;
-      border-radius: 5px;
-      background: #fdeab366;
-      border: 1px solid #f9cccc;
-    }
+<head>
+    <title>AuRo - audio output device router</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
 
-    .__allowed { display: none }
-    .--allow .__allowed { display: block }
-    .--allow .__pending { display: none }
+        body {
+            padding: 16px;
+            width: 400px;
+            background: transparent;
+            font-size: 12px;
+        }
 
-    .anim-appear { animation: appear .5s .1s both }
+        .bg {
+            position: absolute;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-repeat: no-repeat no-repeat;
+            opacity: .1;
+            background-image: url('Icon128.png');
+            background-size: contain;
+            background-position: right;
+            filter: blur(6px);
+            z-index: -1;
+        }
 
-		@keyframes appear {
-		  0% { opacity: 0 }
-		  100% { opacity: 1 }
-		}
+        h3 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
 
-    #set-for-host {
-      padding: 4px 8px;
-      background: #4986e7;
-      color: white;
-      border-radius: 3px;
-      border: none;
-      outline: none;
-      cursor: pointer;
-    }
+        ul {
+            margin: 0;
+        }
 
-    #set-for-host:disabled {
-      background: #d9d9d9;
-      color: #929292;
-      cursor: not-allowed;
-    }
+        li {
+            padding: 0.125em;
+            list-style: none;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            white-space: nowrap;
+            height: 24px;
+        }
 
-    .more {
-      display: flex;
-      justify-content: flex-end;
-      flex-direction: row;
-      gap: 16px;
-      margin-top: 8px;
-    }
+        li.--default label {
+            font-weight: bold
+        }
 
-    a, a:visited {
-      color: blue;
-    }
-  </style>
-  <script src="popup.js" type="module"></script>
+        label {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        input[type="radio"] {
+            margin-right: 16px;
+        }
+
+        #devices {
+            margin-bottom: 8px
+        }
+
+        .tip {
+            padding: 4px 8px;
+            border-radius: 5px;
+            background: #fdeab366;
+            border: 1px solid #f9cccc;
+        }
+
+        .__allowed {
+            display: none
+        }
+
+        .--allow .__allowed {
+            display: block
+        }
+
+        .--allow .__pending {
+            display: none
+        }
+
+        .anim-appear {
+            animation: appear .5s .1s both
+        }
+
+        @keyframes appear {
+            0% {
+                opacity: 0
+            }
+            100% {
+                opacity: 1
+            }
+        }
+
+        #set-for-host {
+            padding: 4px 8px;
+            background: #4986e7;
+            color: white;
+            border-radius: 3px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #set-for-host:disabled {
+            background: #d9d9d9;
+            color: #929292;
+            cursor: not-allowed;
+        }
+
+        .more {
+            display: flex;
+            justify-content: flex-end;
+            flex-direction: row;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        a, a:visited {
+            color: blue;
+        }
+    </style>
+    <script src="popup.js" type="module"></script>
+</head>
 <body>
-  <div class="bg"></div>
-	<div class="__pending anim-appear">
-		<p class="tip" style="font-size: 14px">To use this extension on this domain click <b>"Allow"</b> this site to use your audio.<br>
-		Also if a dialog doesn't appear, permission could be blocked explicitly with your browser settings.</p>
-	</div>
-	<div class="__allowed anim-appear">
-	  <h3>Pick the device for current tab:
-      <button type="button" id="set-for-host">Save for this domain</button>
-    </h3>
-	  <ul id="devices"></ul>
-	  <p class="tip">May be it would need to pause/play media or reload page.<br>
-	    It will not work if interactive site uses AudioContext.</p>
-	</div>
-  <div class="more">
-    <a href="https://chrome.google.com/webstore/detail/auro-audio-output-device/hglnindfakmbhhkldompfjeknfapaceh" target="_blank">Feedback</a>
-    <a href="https://github.com/ish-/AuRo/issues" target="_blank">Report bug</a>
-  </div>
+    <div class="bg"></div>
+    <div class="__pending anim-appear">
+        <p class="tip" style="font-size: 14px">To use this extension on this domain click <b>"Allow"</b> this site to
+            use
+            your audio.<br>
+            Also if a dialog doesn't appear, permission could be blocked explicitly with your browser settings.</p>
+    </div>
+    <div class="__allowed anim-appear">
+        <h3>Pick the device for current tab:
+            <button type="button" id="set-for-host">Save for this domain</button>
+        </h3>
+        <ul id="devices"></ul>
+        <p class="tip">May be it would need to pause/play media or reload page.<br>
+            It will not work if interactive site uses AudioContext.</p>
+    </div>
+    <div class="more">
+        <a href="https://chrome.google.com/webstore/detail/auro-audio-output-device/hglnindfakmbhhkldompfjeknfapaceh"
+           target="_blank">Feedback</a>
+        <a href="https://github.com/ish-/AuRo/issues" target="_blank">Report bug</a>
+    </div>
 </body>
 </html>

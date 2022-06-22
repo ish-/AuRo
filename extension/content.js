@@ -1,21 +1,22 @@
 let inited = false;
 let curDeviceTargets;
 const frameId = Date.now();
-function init (deviceId) {
-	if (!inited) {
-		inited = true;
-		// inject(AuRoPatchContent);
-		return chrome.runtime.sendMessage({
-			name: 'content:inject',
-			frameId,
-		});
-	}
 
-	updateDeviceId(deviceId);
-	chrome.runtime.sendMessage({
-		name: 'updatePopupIconText',
-		deviceId,
-	});
+function init (deviceId) {
+  if (!inited) {
+    inited = true;
+    // inject(AuRoPatchContent);
+    return chrome.runtime.sendMessage({
+      name: 'content:inject',
+      frameId,
+    });
+  }
+
+  updateDeviceId(deviceId);
+  chrome.runtime.sendMessage({
+    name: 'updatePopupIconText',
+    deviceId,
+  });
 }
 
 chrome.runtime.sendMessage({
@@ -23,7 +24,7 @@ chrome.runtime.sendMessage({
   frameId,
 });
 
-var frameDepth = (function getDepth(w) {
+var frameDepth = (function getDepth (w) {
   return w.parent === w ? 0 : 1 + getDepth(w.parent);
 })(window);
 
@@ -40,11 +41,18 @@ function log (desc, ...args) {
 
 function listenStorage ({ tabId, host }) {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
-    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+    for (let [ key, { oldValue, newValue } ] of Object.entries(changes)) {
       if (key === `tab_${ tabId }` || key === `host_${ tabId }`) {
         init(newValue);
       }
     }
+  });
+}
+
+function updateDeviceId (deviceId) {
+  window.postMessage({
+    name: 'auro.update',
+    deviceId,
   });
 }
 
@@ -55,32 +63,25 @@ function updateDeviceId (deviceId) {
 	});
 }
 
-function updateDeviceId (deviceId) {
-	window.postMessage({
-		name: 'auro.update',
-		deviceId,
-	});
-}
-
 chrome.runtime.onMessage.addListener(
-	(msg, sender, send) => {
-		log('onMessage', { msg, sender });
-		
-		switch (msg.name) {
-			case 'content:inject:resp':
-				updateDeviceId(currentDeviceId)
-				break;
-			case 'content:init:resp':
-				if (msg.frameId !== frameId)
-					return;
+  (msg, sender, send) => {
+    log('onMessage', { msg, sender });
+
+    switch (msg.name) {
+      case 'content:inject:resp':
+        updateDeviceId(currentDeviceId)
+        break;
+      case 'content:init:resp':
+        if (msg.frameId !== frameId)
+          return;
         console.log('content:init:resp', msg);
         curDeviceTargets = msg.targets;
         if (msg.targets.deviceId && msg.targets.deviceId !== 'default') {
-					inited = true;
-					init(msg.targets.deviceId);
-				}
-				listenStorage(msg.tabId);
-				break;
+          inited = true;
+          init(msg.targets.deviceId);
+        }
+        listenStorage(msg.tabId);
+        break;
 
       case 'popup:getState':
         navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
@@ -102,7 +103,8 @@ chrome.runtime.onMessage.addListener(
               frameId,
             });
           });
-        }).catch(err => {});
+        }).catch(err => {
+        });
         break;
 
       default:
@@ -162,7 +164,7 @@ function AuRoPatchContent () {
 
   const getDeviceId = () => navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
     return navigator.mediaDevices.enumerateDevices().then(devices => {
-      l({devices})
+      l({ devices })
       const selectedDevice = devices.find(({ deviceId }) => deviceId === $AuRo.deviceId);
       if (selectedDevice)
         return selectedDevice.deviceId;
@@ -170,7 +172,7 @@ function AuRoPatchContent () {
     });
   });
 
-  var frameDepth = (function getDepth(w) {
+  var frameDepth = (function getDepth (w) {
     return w.parent === w ? 0 : 1 + getDepth(w.parent);
   })(window);
 
@@ -222,6 +224,7 @@ function AuRoPatchContent () {
   function l (...args) {
     console.log('$AuRo (' + frameDepth + '): ', ...args);
   }
+
   function le (...args) {
     console.error('$AuRo error!')
     console.log('$AuRo error (' + frameDepth + '): ', ...args);
@@ -230,7 +233,7 @@ function AuRoPatchContent () {
   l('Monkeypatched');
 }
 
-function inject(fn) {
+function inject (fn) {
 
 }
 

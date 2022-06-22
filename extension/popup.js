@@ -21,6 +21,7 @@ let host;
 // });
 
 const inputName = 'sinkId';
+
 function drawDeviceList (devices, targets, tab) {
   let currentDeviceId = targets.deviceId;
   log('drawDeviceList', { devices });
@@ -31,10 +32,11 @@ function drawDeviceList (devices, targets, tab) {
   let hostDeviceId = targets.hostDeviceId;
   $setForHost.disabled = hostDeviceId === currentDeviceId;
   $setForHost.addEventListener('click', onSetForHostClick);
+
   function onSetForHostClick (e) {
     hostDeviceId = currentDeviceId;
     Storage.set({ [`host_${ host }`]: currentDeviceId });
-    Storage.remove([`tab_${ tab.id }`]);
+    Storage.remove([ `tab_${ tab.id }` ]);
     $setForHost.disabled = true;
   }
 
