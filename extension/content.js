@@ -78,7 +78,7 @@ chrome.runtime.onMessage.addListener(
         curDeviceTargets = msg.targets;
         if (msg.targets.deviceId && msg.targets.deviceId !== 'default') {
           inited = true;
-          init(msg.deviceId);
+          init(msg.targets.deviceId);
         }
         listenStorage(msg.tabId);
         break;
