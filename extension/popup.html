@@ -103,16 +103,16 @@
 <body>
   <div class="bg"></div>
 	<div class="__pending anim-appear">
-		<p class="tip" style="font-size: 14px">To use this extension on this domain click <b>"Allow"</b> this site to use your audio.<br>
-		Also if a dialog doesn't appear, permission could be blocked explicitly with your browser settings.</p>
+		<p class="tip" style="font-size: 14px"><b>"Allow"</b> audio access for the current domain to enable functionality.<br>
+		A missing dialog means that no audio was detected on this site, it might be because the permission is blocked explicitly within your browser settings.</p>
 	</div>
 	<div class="__allowed anim-appear">
-	  <h3>Pick the device for current tab:
+	  <h3>Pick the output device for this tab:
       <button type="button" id="set-for-host">Save for this domain</button>
     </h3>
 	  <ul id="devices"></ul>
-	  <p class="tip">May be it would need to pause/play media or reload page.<br>
-	    It will not work if interactive site uses AudioContext.</p>
+	  <p class="tip">You might need to pause/play media or reload the page.<br>
+	    Switching will not work for interactive sites using AudioContext.</p>
 	</div>
   <div class="more">
     <a href="https://chrome.google.com/webstore/detail/auro-audio-output-device/hglnindfakmbhhkldompfjeknfapaceh" target="_blank">Feedback</a>
