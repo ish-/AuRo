@@ -1,4 +1,5 @@
 import {log} from "./logging.js";
+import {getFrameDepth} from "./dom.js";
 
 function makeEvent (name, tabs) {
   function sendRuntime (message) {
@@ -22,6 +23,10 @@ function makeEvent (name, tabs) {
     chrome.runtime.onMessage
       .addListener((message, sender, sendResponse) => {
         if (message.name === name) {
+          if (tabs && tabs.rootFrame && getFrameDepth() !== 0) {
+            return;
+          }
+
           log('on message', message, sender);
 
           const result = callback(message, sender);
@@ -59,5 +64,5 @@ export const extension = {
 export const tabs = {
   setInitialized: makeEvent('auro:setInitialized', true),
   getInitialized: makeEvent('auro:getInitialized', true),
-  getMediaState: makeEvent('auro:getMediaState', true),
+  getMediaState: makeEvent('auro:getMediaState', { rootFrame: true }),
 };
