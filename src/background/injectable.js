@@ -11,7 +11,7 @@ export function main () {
     deviceId: null,
     update (deviceId) {
       $AuRo.deviceId = deviceId;
-      auro.logging.log('update()', { deviceId });
+      auro.logging.log(`update(${deviceId})`);
 
       Promise.all(this.els.map(el => {
         return new Promise(rslv => {
@@ -28,65 +28,56 @@ export function main () {
           setTimeout(() => el.play(), 3);
         })
 
-        auro.logging.log(`update().setSinkId(${ deviceId }) for: `, playingEls);
+        auro.logging.log(`update().setSinkId(${deviceId}) for: `, playingEls);
       });
     }
   };
 
-  const getDeviceId = () => navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
-    return navigator.mediaDevices.enumerateDevices().then(devices => {
-      auro.logging.log({ devices })
-      const selectedDevice = devices.find(({ deviceId }) => deviceId === $AuRo.deviceId);
-      if (selectedDevice)
-        return selectedDevice.deviceId;
-      return Promise.reject('deviceId ' + $AuRo.deviceId + ' not found');
-    });
-  });
+  async function getDeviceId () {
+    await navigator.mediaDevices.getUserMedia({ audio: true });
+    const devices = await navigator.mediaDevices.enumerateDevices();
 
-  var _audioPlay = HTMLAudioElement.prototype.play;
-  HTMLAudioElement.prototype.play = function () {
-    auro.logging.log('Audio.play()', this);
-    $AuRo.addEl(this);
-    return getDeviceId().then(deviceId => {
-      return this.setSinkId($AuRo.deviceId).then(() => {
-        auro.logging.log('Audio.play().getDeviceId().setSinkId()', { deviceId });
-        return _audioPlay.call(this);
-      });
-    }).catch(err => {
-      auro.logging.error(err);
-      return _audioPlay.call(this);
-    });
-  };
+    const selectedDevice = devices.find(({ deviceId }) => deviceId === $AuRo.deviceId);
 
-  var _videoPlay = HTMLVideoElement.prototype.play;
-  HTMLVideoElement.prototype.play = function () {
-    auro.logging.log('Video.play()', this);
-    $AuRo.addEl(this);
-    return getDeviceId().then(deviceId => {
-      return this.setSinkId($AuRo.deviceId).then(() => {
-        auro.logging.log('Video.play().getDeviceId().setSinkId()', { deviceId });
-        return _videoPlay.call(this);
-      });
-    }).catch(err => {
-      auro.logging.error(err);
-      return _videoPlay.call(this);
-    });
-  };
+    if (selectedDevice) {
+      return selectedDevice.deviceId;
+    } else {
+      auro.logging.warn('Requested output device was not found. It was probably disconnected. You might want to update your preferred device.');
+      auro.logging.warn('Falling back to the default output device.');
+      return '';
+    }
+  }
 
-  var _aPlay = Audio.prototype.play;
-  Audio.prototype.play = function () {
-    auro.logging.log('Audio.play()', this);
-    $AuRo.addEl(this);
-    return getDeviceId().then(deviceId => {
-      return this.setSinkId($AuRo.deviceId).then(() => {
-        auro.logging.log('Audio.play().getDeviceId().setSinkId()', { deviceId });
-        return _aPlay.call(this);
-      });
-    }).catch(err => {
-      auro.logging.error(err);
-      return _aPlay.call(this);
-    });
-  };
+  function patch (element, name) {
+    if (element.prototype.play.$AuRoPatched) {
+      auro.logging.log(`${name} is already patched. Skipping!`);
+      return;
+    }
+
+    const _elPlay = element.prototype.play;
+    element.prototype.play = async function () {
+      auro.logging.log(`${name}.play()`, 'wrapper', this);
+
+      $AuRo.addEl(this);
+
+      try {
+        const deviceId = await getDeviceId();
+
+        auro.logging.log(`${name}.setSinkId(${deviceId})`);
+
+        await this.setSinkId(deviceId);
+      } catch (err) {
+        auro.logging.error(err);
+      } finally {
+        auro.logging.log(`${name}.play()`, _elPlay);
+        await _elPlay.call(this);
+      }
+    };
+    element.prototype.play.$AuRoPatched = true;
+  }
+
+  patch(HTMLAudioElement, 'HTMLAudioElement');
+  patch(HTMLVideoElement, 'HTMLVideoElement');
 
   auro.logging.log('Monkeypatched');
 }

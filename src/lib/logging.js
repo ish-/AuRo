@@ -10,6 +10,10 @@ export function log (...args) {
   }
 }
 
+export function warn (...args) {
+  console.warn(...getPrefixes(), ...args);
+}
+
 export function error (...args) {
   console.error(...getPrefixes(), ...args);
 }

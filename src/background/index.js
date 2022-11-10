@@ -6,35 +6,44 @@ function isDefaultDeviceId (deviceId) {
 }
 
 async function onOutputDeviceChanged (tabId, deviceId) {
-  // Inject the main AuRo machinery in the page when necessary
-  if (!isDefaultDeviceId(deviceId) && !await auro.events.tabs.getInitialized(tabId)) {
-    // Preload the auro library
+  try {
+    // Inject the main AuRo machinery in the page when necessary
+    if (!isDefaultDeviceId(deviceId) && !await auro.events.tabs.getInitialized(tabId)) {
+      // Preload the auro library
+      await chrome.scripting.executeScript({
+        target: { tabId, allFrames: true },
+        world: 'MAIN',
+        files: [ 'lib.js' ],
+      });
+      await chrome.scripting.executeScript({
+        target: { tabId, allFrames: true },
+        world: 'MAIN',
+        func: main,
+      });
+      await auro.events.tabs.setInitialized(tabId);
+    }
+
+    // Trigger a device sink update in AuRo
     await chrome.scripting.executeScript({
       target: { tabId, allFrames: true },
       world: 'MAIN',
-      files: ['lib.js'],
+      func: updateOutputDevice,
+      args: [ isDefaultDeviceId(deviceId) ? '' : deviceId ]
     });
-    await chrome.scripting.executeScript({
-      target: { tabId, allFrames: true },
-      world: 'MAIN',
-      func: main,
+
+    // Update the UI
+    await chrome.action.setBadgeText({
+      tabId,
+      text: isDefaultDeviceId(deviceId) ? '' : 'Ω',
     });
-    await auro.events.tabs.setInitialized(tabId);
+  } catch (err) {
+    if (err.message === 'The extensions gallery cannot be scripted.') {
+      auro.logging.log('No script can run on the extension gallery.');
+      return;
+    }
+
+    auro.logging.error(err);
   }
-
-  // Trigger a device sink update in AuRo
-  await chrome.scripting.executeScript({
-    target: { tabId, allFrames: true },
-    world: 'MAIN',
-    func: updateOutputDevice,
-    args: [ isDefaultDeviceId(deviceId) ? '' : deviceId ]
-  });
-
-  // Update the UI
-  await chrome.action.setBadgeText({
-    tabId,
-    text: isDefaultDeviceId(deviceId) ? '' : 'Ω',
-  });
 }
 
 function senderToTargetKeys (sender) {
