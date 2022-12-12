@@ -10,6 +10,25 @@ To not overhead every page with script injection sometimes it requires to pause/
 
 **Note** that the API requires a successful call to `getUserMedia()` for every site with audio sinks that
 need to be manipulated.
+
+## Build
+To get a production build, you can run:
+
+```shell
+npm run build
+```
+
+To get a development build, you can run:
+
+```shell
+npm run watch
+```
+
+The main difference is that `watch` will automatically turn on verbose logging and setup the necessary machinery to
+automatically reload the extension whenever a change is made in the code.
+
+No matter the type of build you pick, you will have to load the `dist` folder as an unpacked extension in your browser.
+
 ## Links
 [Chrome Store](https://chrome.google.com/webstore/detail/auro-audio-output-device/hglnindfakmbhhkldompfjeknfapaceh)
 [GitHub](https://github.com/ish-/AuRo)
