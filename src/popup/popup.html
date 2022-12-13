@@ -3,137 +3,101 @@
 <head>
     <title>AuRo - audio output device router</title>
     <style>
-        * {
+        /* CSS Reset */
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body, h1, h2, h3, h4, h5, h6, p, ol, ul {
+            margin: 0;
             padding: 0;
-            margin: 0;
+            font-weight: normal;
         }
-
-        body {
-            padding: 16px;
-            width: 400px;
-            background: transparent;
-            font-size: 12px;
-        }
-
-        h3 {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 8px;
-        }
-
-        ul {
-            margin: 0;
-        }
-
-        li {
-            padding: 0.125em;
+        ol, ul {
             list-style: none;
-            display: flex;
-            justify-content: start;
-            align-items: center;
-            white-space: nowrap;
-            height: 24px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
         }
 
-        li.--default label {
-            font-weight: bold
-        }
-
-        label {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        input[type="radio"] {
-            margin-right: 16px;
-        }
-
-        #devices {
-            margin-bottom: 8px
-        }
-
-        .tip {
-            padding: 4px 8px;
-            border-radius: 5px;
-            background: #fdeab366;
-            border: 1px solid #f9cccc;
-        }
-
-        .__allowed {
-            display: none
-        }
-
-        .--allow .__allowed {
-            display: block
-        }
-
-        .--allow .__pending {
-            display: none
-        }
-
-        .anim-appear {
-            animation: appear .5s .1s both
-        }
-
-        @keyframes appear {
-            0% {
-                opacity: 0
-            }
-            100% {
-                opacity: 1
-            }
-        }
-
-        #set-for-host {
-            padding: 4px 8px;
-            background: #4986e7;
-            color: white;
-            border-radius: 3px;
-            border: none;
-            outline: none;
-            cursor: pointer;
-        }
-
-        #set-for-host:disabled {
-            background: #d9d9d9;
-            color: #929292;
-            cursor: not-allowed;
-        }
-
-        .more {
-            display: flex;
-            justify-content: flex-end;
-            flex-direction: row;
-            gap: 16px;
-            margin-top: 8px;
-        }
+        /* Main */
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.25rem; }
+        p { margin-bottom: 0.5rem; }
+        em { font-weight: bold; }
 
         a, a:visited {
             color: blue;
+        }
+
+        .button {
+            padding: 0.4em 0.7em;
+            border: 0;
+            border-radius: 0.5em;
+        }
+        .button-primary {
+            background: #4986e7;
+            color: white;
+        }
+        .button-primary:hover {
+            filter: brightness(1.1);
+        }
+        .button-primary:active {
+            filter: brightness(0.9);
+        }
+        .button-primary[disabled] {
+            filter: none;
+            background: #ccc;
+        }
+
+        .shell {
+            width: 60ch;
+            font-size: 1rem;
+        }
+        .main {
+            margin: 1rem;
+        }
+        .more {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 0.5rem 1rem;
+
+            border-top: 1px solid #555;
+            background: #ddd;
+
+            font-size: 0.75rem;
+        }
+
+        .allowed .heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+        }
+        .allowed .save-host {
+            font-size: 0.85rem;
+        }
+        .allowed .devices {
+            margin-bottom: 1rem;
+        }
+        .allowed .device.default {
+            font-weight: bold;
+            font-style: italic;
+        }
+        .allowed .device-input {
+            margin: 0.4rem 0.5rem;
+        }
+        .allowed .tip {
+            color: #333;
+            font-style: italic;
         }
     </style>
     <script src="index.js" type="module"></script>
 </head>
 <body>
-    <div class="__pending anim-appear">
-        <p class="tip" style="font-size: 14px"><b>"Allow"</b> audio access for the current domain to enable functionality.<br>
-            A missing dialog means that no audio was detected on this site, it might be because the permission is blocked explicitly within your browser settings.</p>
-    </div>
-    <div class="__allowed anim-appear">
-        <h3>Pick the output device for this tab:
-            <button type="button" id="set-for-host">Save for this domain</button>
-        </h3>
-        <ul id="devices"></ul>
-        <p class="tip">You might need to pause/play media or reload the page.<br>
-            Switching will not work for interactive sites using AudioContext.</p>
-    </div>
-    <div class="more">
-        <a href="https://chrome.google.com/webstore/detail/auro-audio-output-device/hglnindfakmbhhkldompfjeknfapaceh"
-           target="_blank">Feedback</a>
-        <a href="https://github.com/ish-/AuRo/issues" target="_blank">Report bug</a>
-    </div>
 </body>
 </html>
