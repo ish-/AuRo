@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import { chromeExtension, simpleReloader } from 'rollup-plugin-chrome-extension';
@@ -33,6 +35,9 @@ export default (args) => {
         dir: 'dist',
         format: 'es',
         globals: [ 'chrome' ],
+        // HACK: Bypass a bug in chromeExtension() with chunk generation on Windows.
+        // https://github.com/crxjs/chrome-extension-tools/issues/111
+        chunkFileNames: path.join('chunks', '[name]-[hash].js'),
       },
       treeshake: false,
       plugins: [
