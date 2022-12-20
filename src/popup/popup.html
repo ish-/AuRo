@@ -24,13 +24,48 @@
         }
 
         /* Main */
+        :root {
+            --color-bg: white;
+            --color-bg-low: #ddd;
+            --color-bg-low-separator: #555;
+
+            --color-text-high-contrast: black;
+            --color-text-low-contast: #333;
+            --color-text-light: white;
+
+            --color-primary: #4986e7;
+            --color-disabled: #ccc;
+            --color-link: blue;
+        }
+
+        @media screen and (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #1b1b1b;
+                --color-bg-low: #2b2b2b;
+                --color-bg-low-separator: #555;
+
+                --color-text-high-contrast: white;
+                --color-text-low-contast: #bbb;
+                --color-text-light: #1b1b1b;
+
+                --color-primary: #4986e7;
+                --color-disabled: #333;
+                --color-link: #4986e7;
+            }
+        }
+
+        html {
+            background-color: var(--color-bg);
+            color: var(--color-text-high-contrast);
+        }
+
         h1 { font-size: 1.5rem; }
         h2 { font-size: 1.25rem; }
         p { margin-bottom: 0.5rem; }
         em { font-weight: bold; }
 
         a, a:visited {
-            color: blue;
+            color: var(--color-link);
         }
 
         .button {
@@ -39,8 +74,8 @@
             border-radius: 0.5em;
         }
         .button-primary {
-            background: #4986e7;
-            color: white;
+            background: var(--color-primary);
+            color: var(--color-text-light);
         }
         .button-primary:hover {
             filter: brightness(1.1);
@@ -50,7 +85,7 @@
         }
         .button-primary[disabled] {
             filter: none;
-            background: #ccc;
+            background: var(--color-disabled);
         }
 
         .shell {
@@ -66,8 +101,8 @@
             gap: 1rem;
             padding: 0.5rem 1rem;
 
-            border-top: 1px solid #555;
-            background: #ddd;
+            border-top: 1px solid var(--color-bg-low-separator);
+            background: var(--color-bg-low);
 
             font-size: 0.75rem;
         }
@@ -92,7 +127,7 @@
             margin: 0.4rem 0.5rem;
         }
         .allowed .tip {
-            color: #333;
+            color: var(--color-text-low-contast);
             font-style: italic;
         }
     </style>
