@@ -1,0 +1,24 @@
+root = true
+
+[*]
+charset = utf-8
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+tab_width = 4
+
+[{*.cjs,*.js}]
+indent_size = 2
+tab_width = 2
+ij_javascript_space_before_function_left_parenth = true
+ij_javascript_space_before_method_parentheses = true
+ij_javascript_spaces_within_object_literal_braces = true
+ij_javascript_spaces_within_array_initializer_brackets = true
+ij_javascript_spaces_within_interpolation_expressions = true
+
+[{*.har,*.jsb2,*.jsb3,*.json,.babelrc,.eslintrc,.prettierrc,.stylelintrc,bowerrc,jest.config}]
+indent_size = 2
+
+[{*.htm,*.html,*.ng,*.sht,*.shtm,*.shtml}]
+ij_html_do_not_indent_children_of_tags = html,thead,tbody,tfoot

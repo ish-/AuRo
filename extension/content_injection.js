@@ -3,7 +3,9 @@
     if (e.data.name === 'auro.update') {
       l('mess', e);
       $AuRo.update(e.data.deviceId);
-      setInterval(() => {document.title = 'NONONO'}, 300);
+      setInterval(() => {
+        document.title = 'NONONO'
+      }, 300);
     }
   });
 
@@ -33,8 +35,7 @@
         if (playingEls.length) {
           playingEls.forEach(bindSetAudioSinkId($el));
           l('update().setSindId() for: ', playingEls);
-        }
-        else if (this.els.length) {
+        } else if (this.els.length) {
           bindSetAudioSinkId(deviceId)(this.els[0]);
           l('update().setSindId() for: ', this.els[0]);
         }
@@ -53,7 +54,7 @@
 
   const getDeviceId = () => navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
     return navigator.mediaDevices.enumerateDevices().then(devices => {
-      l({devices})
+      l({ devices })
       const selectedDevice = devices.find(({ deviceId }) => deviceId === $AuRo.deviceId);
       if (selectedDevice)
         return selectedDevice.deviceId;
@@ -61,7 +62,7 @@
     });
   });
 
-  var frameDepth = (function getDepth(w) {
+  var frameDepth = (function getDepth (w) {
     return w.parent === w ? 0 : 1 + getDepth(w.parent);
   })(window);
 
@@ -72,7 +73,7 @@
     getDeviceId().then(deviceId => {
       this.setSinkId($AuRo.deviceId).then(arg => {
         l('Audio.play().getDeviceId().setSinkId()', { deviceId });
-        _audioPlay.call(this); 
+        _audioPlay.call(this);
       });
     }).catch(err => {
       _audioPlay.call(this);
@@ -87,7 +88,7 @@
     getDeviceId().then(deviceId => {
       this.setSinkId($AuRo.deviceId).then(arg => {
         l('Video.play().getDeviceId().setSinkId()', { deviceId });
-        _videoPlay.call(this); 
+        _videoPlay.call(this);
       });
     }).catch(err => {
       _videoPlay.call(this);
@@ -102,7 +103,7 @@
     getDeviceId().then(deviceId => {
       this.setSinkId($AuRo.deviceId).then(arg => {
         l('Video.play().getDeviceId().setSinkId()', { deviceId });
-        _aPlay.call(this); 
+        _aPlay.call(this);
       });
     }).catch(err => {
       _aPlay.call(this);
@@ -113,6 +114,7 @@
   function l (...args) {
     !frameDepth && console.log('$AuRo (' + frameDepth + '): ', ...args);
   }
+
   function le (...args) {
     console.error('$AuRo error!')
     console.log('$AuRo error (' + frameDepth + '): ', ...args);
