@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>AuRo - audio output device router</title>
+    <style>
+        /* CSS Reset */
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body, h1, h2, h3, h4, h5, h6, p, ol, ul {
+            margin: 0;
+            padding: 0;
+            font-weight: normal;
+        }
+        ol, ul {
+            list-style: none;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Main */
+        :root {
+            --color-bg: white;
+            --color-bg-low: #ddd;
+            --color-bg-low-separator: #555;
+
+            --color-text-high-contrast: black;
+            --color-text-low-contast: #333;
+            --color-text-light: white;
+
+            --color-primary: #4986e7;
+            --color-disabled: #ccc;
+            --color-link: blue;
+        }
+
+        @media screen and (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #1b1b1b;
+                --color-bg-low: #2b2b2b;
+                --color-bg-low-separator: #555;
+
+                --color-text-high-contrast: white;
+                --color-text-low-contast: #bbb;
+                --color-text-light: #1b1b1b;
+
+                --color-primary: #4986e7;
+                --color-disabled: #333;
+                --color-link: #4986e7;
+            }
+        }
+
+        html {
+            background-color: var(--color-bg);
+            color: var(--color-text-high-contrast);
+        }
+
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.25rem; }
+        p { margin-bottom: 0.5rem; }
+        em { font-weight: bold; }
+
+        a, a:visited {
+            color: var(--color-link);
+        }
+
+        .button {
+            padding: 0.4em 0.7em;
+            border: 0;
+            border-radius: 0.5em;
+        }
+        .button-primary {
+            background: var(--color-primary);
+            color: var(--color-text-light);
+        }
+        .button-primary:hover {
+            filter: brightness(1.1);
+        }
+        .button-primary:active {
+            filter: brightness(0.9);
+        }
+        .button-primary[disabled] {
+            filter: none;
+            background: var(--color-disabled);
+        }
+
+        .shell {
+            width: 60ch;
+            font-size: 1rem;
+        }
+        .main {
+            margin: 1rem;
+        }
+        .more {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 0.5rem 1rem;
+
+            border-top: 1px solid var(--color-bg-low-separator);
+            background: var(--color-bg-low);
+
+            font-size: 0.75rem;
+        }
+
+        .allowed .heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+        }
+        .allowed .save-host {
+            font-size: 0.85rem;
+        }
+        .allowed .devices {
+            margin-bottom: 1rem;
+        }
+        .allowed .device.default {
+            font-weight: bold;
+            font-style: italic;
+        }
+        .allowed .device-input {
+            margin: 0.4rem 0.5rem;
+        }
+        .allowed .tip {
+            color: var(--color-text-low-contast);
+            font-style: italic;
+        }
+    </style>
+    <script src="index.js" type="module"></script>
+</head>
+<body>
+</body>
+</html>
