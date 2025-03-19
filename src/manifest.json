@@ -5,8 +5,8 @@
   "description": "pick audio output device for current tab",
   "author": "",
   "homepage_url": "https://github.com/ish-/AuRo",
-  "version": "0.2",
-  "version_name": "0.2",
+  "version": "0.4",
+  "version_name": "0.4",
   "minimum_chrome_version": "102.0",
   "action": {
     "default_icon": {

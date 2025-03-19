@@ -1,7 +1,7 @@
 {
   "name": "AuRo - audio output device router",
   "description": "pick audio output device for current tab",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "build": "rollup -c rollup.config.js",
