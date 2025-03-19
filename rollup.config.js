@@ -4,6 +4,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import { chromeExtension, simpleReloader } from 'rollup-plugin-chrome-extension';
 import copy from 'rollup-plugin-copy';
+import del from 'rollup-plugin-delete';
 
 export default (args) => {
   const commonPlugins = [
@@ -26,7 +27,7 @@ export default (args) => {
         name: 'auro',
       },
       plugins: [
-        ...commonPlugins,
+        del({ targets: 'dist' })
       ],
     },
     {
@@ -46,6 +47,7 @@ export default (args) => {
         ...commonPlugins,
         copy({
           targets: [
+            { src: 'src/Icon128.png', dest: 'dist' },
             { src: 'src/Icon128-white.png', dest: 'dist' }
           ]
         })
