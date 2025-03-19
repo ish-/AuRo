@@ -31,7 +31,6 @@ auro.events.tabs.getMediaState.on(async () => {
 
   const mediaDeviceInfos = await navigator.mediaDevices.enumerateDevices();
   const devices = mediaDeviceInfos.filter(({ kind }) => kind === 'audiooutput');
-  devices.sort((l, r) => l.label < r.label ? -1 : l.label > r.label ? 1 : 0);
 
   const targets = filterValidDeviceTargets(await auro.events.extension.getTargets(), devices);
   return { devices, targets };
