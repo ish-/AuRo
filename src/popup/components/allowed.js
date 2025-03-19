@@ -65,5 +65,8 @@ export function allowed (devices, targets, tab) {
       createElement('br'),
       'Switching will not work for interactive sites using AudioContext.',
     ]),
+    createElement('p', { className: 'tip' }, [
+      "With the new Chrome extension manifest v3, it's not possible to switch devices immediately on page start. Be careful with glitches.",
+    ])
   ]);
 }
