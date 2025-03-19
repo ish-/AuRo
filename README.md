@@ -1,7 +1,10 @@
 # AuRo
 A *Chrome Extension* to pick an audio output device for HTML5 audio and video elements.
 
-In 0.0.3 saving deviceId for a domain became possible.
+In 0.4.0 manifest v3 was implemented.
+  - known issue: switching audio device immediately on page start causes glitches.
+
+In 0.3.0 saving deviceId for a domain became possible.
 
 ## How it works
 The extension patches HTML5 audio and video .play() method and manipulates the `sinkId` in order to switch to the desired audio output device.
